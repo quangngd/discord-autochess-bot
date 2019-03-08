@@ -3,8 +3,9 @@ const client = new Discord.Client();
 const log = require('./utilities/logger');
 
 const prefix = '!';
-const ownerID = ('548313501651959823');
 
+const token = process.argv[2] || process.env.TOKEN;
+log.info(`Use secret: ${token}`);
 
 
 client.on('message', message => {
@@ -27,6 +28,6 @@ client.on('message', message => {
     }
 });
 client.on('ready', () => {
-    console.log('Bot start.')
+    log.info('Bot start');
 });
-client.login('NTQ4MzEzNTAxNjUxOTU5ODIz.D1-KBw.pcL0ldq_9N06ijr4N7sMj_jL-Ig');
+client.login(token);
