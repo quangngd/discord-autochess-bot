@@ -2,39 +2,51 @@ const chess = require('../utilities/chess');
 const db = require('../utilities/db');
 const log = require('../utilities/logger');
 
-exports.run = (client, message, args) => {
-    let target = args[0];
-    let steamId, userId;
-    try {
-        if(target) userId = target.match(/<@!?([0-9]+)>/)[1];
-        else userId = message.author.id;
-    } catch (e) {
-        steamId = target;
-    }
-    finally {
-        if(!steamId) db.get(userId)
-            .then(data => {
-                if(data) rankFromSteam(message, data.steamId);
-                else message.reply('no linked Steam found for this account, use "!link [SteamId]" first!');
-            })
-        else rankFromSteam(message,steamId);
+exports.run = async (client, message, args) => {
+    let userId = message.author.id;
+    let embed = {
+        "color": 12729122,
+        "description": "Unknow command."
     }
 
-}
+    if (args.length == 0) {
+        // !rank: check self's rank
 
-function rankFromSteam(message, steamId) {
-    chess.fetchUserData(steamId)
-        .then(res => res.json())
-        .then(userData => {
-            if (!userData) message.reply('error retrieving info, recheck your steam id');
-            else {
-                let rank = chess.parseRank(userData);
-                let name = chess.parseName(userData)
-                message.reply(`${name} rank: ${rank}`)
-            }
-        })
-        .catch(err => {
-            log.error(err);
-            message.reply('error retrieving info, recheck your steam id')
-        });
+        let steamId = await db.get(userId);
+
+        if (!steamId) embed = {
+            "color": 12729122,
+            "description": `No linked account found. Please use this [link](${linkURL}) to connect discord to your steam.`
+        };
+        else {
+            let steamName = await chess.getName(steamId);
+            let rank = await chess.getRank(steamId);
+            embed = {
+                "color": 2278027,
+                "description": `**${steamName}**, your rank is **${rank}**.`
+            };
+        }
+    } else if (args.length == 1 && /<@!?([0-9]+)>/.test(args[0])) {
+        // !rank @user: check @user's rank
+
+        let userId = /<@!?([0-9]+)>/.exec(args[0])[1];
+        let steamId = await db.get(userId);
+
+        if (!steamId) embed = {
+            "color": 12729122,
+            "description": `No linked account found for <@${userId}>!`
+        };
+        else {
+            let steamName = await chess.getName(steamId);
+            let rank = await chess.getRank(steamId);
+            embed = {
+                "color": 2278027,
+                "description": `**${steamName}**'s rank is **${rank}**.`
+            };
+        }
+    }
+
+    message.channel.send({
+        embed
+    });
 }

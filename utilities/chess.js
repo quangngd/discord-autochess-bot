@@ -1,13 +1,17 @@
 const fetch = require("node-fetch");
+const log = require('../utilities/logger');
 
-module.exports.fetchUserData = (steamId) => {
-    url = 'http://www.autochess-stats.com/backend/api/dacprofiles/';
+fetchUserData = async (steamId) => {
+    url = process.env.DAC_API;
     url += steamId;
-    return fetch(url);
+    log.info(`Log from ${url}`);
+    let steamData = await (await fetch(url)).json();
+    return steamData;
 }
 
-module.exports.parseRank = (data) => {
-    var dacProfile = data.dacProfile;
+module.exports.getRank = async (steamId) => {
+    const steamData = await fetchUserData(steamId);
+    const dacProfile = steamData.dacProfile;
     if (!dacProfile)
         return "unknown";
     if (dacProfile.queenRank)
@@ -36,6 +40,8 @@ module.exports.parseRank = (data) => {
     return title;
 }
 
-module.exports.parseName = (data) => {    
-    return (data.personaName)? data.personaName : 'Unknown';
+module.exports.getName = async (steamId) => {
+    let name = (await fetchUserData(steamId)).personaName;
+    log.info(name);
+    return name;
 }

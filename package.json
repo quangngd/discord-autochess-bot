@@ -5,8 +5,7 @@
   "main": "server.js",
   "dependencies": {
     "discord.js": "^11.4.2",
-    "fs-json-store": "^2.3.0",
-    "json-fs-store": "^1.0.1",
+    "dotenv": "^6.2.0",
     "node-fetch": "^2.3.0",
     "winston": "^3.2.1"
   },

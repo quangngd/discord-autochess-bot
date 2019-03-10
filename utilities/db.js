@@ -1,15 +1,11 @@
-const {Store} = require("fs-json-store");
-const repo = './data/';
+const fetch = require('node-fetch');
+const dbGetURL = process.env.DB_GET_URL;
+const log = require('./logger');
 
-
-module.exports.post = async (userId, steamId) => {
-    let data = {
-        id: userId,
-        steamId: steamId
-    }
-    return new Store({file: repo+userId}).write(data);
-}
 
 module.exports.get = async (userId) => {
-    return new Store({file: repo+userId}).read();
+    let res = await fetch(dbGetURL + `?userId=${userId}`);
+    let steamId = (await res.json()).steamid;
+    log.info(`Get steamid for ${userId}: ${steamId}`)
+    return steamId;
 }
