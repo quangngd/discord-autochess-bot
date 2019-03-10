@@ -1,8 +1,9 @@
 const fetch = require("node-fetch");
 const log = require('../utilities/logger');
+const DAC_API = process.env.DAC_API;
 
 fetchUserData = async (steamId) => {
-    url = process.env.DAC_API;
+    url = DAC_API;
     url += steamId;
     log.info(`Log from ${url}`);
     let steamData = await (await fetch(url)).json();
@@ -12,10 +13,12 @@ fetchUserData = async (steamId) => {
 module.exports.getRank = async (steamId) => {
     const steamData = await fetchUserData(steamId);
     const dacProfile = steamData.dacProfile;
+    log.info(JSON.stringify(steamData));
+    log.info(JSON.stringify(dacProfile));
     if (!dacProfile)
         return "unknown";
     if (dacProfile.queenRank)
-        return "Queen";
+        return "Queen"; 
     var value = dacProfile.rank;
     var title = ""
     if (value < 0)

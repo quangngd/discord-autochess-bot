@@ -2,6 +2,8 @@ const chess = require('../utilities/chess');
 const db = require('../utilities/db');
 const log = require('../utilities/logger');
 
+const LINK_URL = process.env.LINK_URL;
+
 exports.run = async (client, message, args) => {
     let userId = message.author.id;
     let embed = {
@@ -16,14 +18,14 @@ exports.run = async (client, message, args) => {
 
         if (!steamId) embed = {
             "color": 12729122,
-            "description": `No linked account found. Please use this [link](${linkURL}) to connect discord to your steam.`
+            "description": `No linked account found. Please use this [link](${LINK_URL}) to connect discord to your steam.`
         };
         else {
             let steamName = await chess.getName(steamId);
             let rank = await chess.getRank(steamId);
             embed = {
                 "color": 2278027,
-                "description": `**${steamName}**, your rank is **${rank}**.`
+                "description": `**${steamName}**, your rank is **${rank}**`
             };
         }
     } else if (args.length == 1 && /<@!?([0-9]+)>/.test(args[0])) {
