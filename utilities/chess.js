@@ -1,20 +1,30 @@
 const fetch = require("node-fetch");
 const log = require('../utilities/logger');
 const DAC_API = process.env.DAC_API;
-
+const REFRESH_URL = process.env.REFRESH_URL;
 fetchUserData = async (steamId) => {
-    url = DAC_API;
-    url += steamId;
-    log.info(`Log from ${url}`);
-    let steamData = await (await fetch(url)).json();
-    return steamData;
+    let refreshUrl = REFRESH_URL + steamId;
+    let apiUrl = DAC_API;
+    apiUrl += steamId;
+    log.info(`Get DAC for ${steamId}`);
+    let steamData = null;
+    try {
+        await(fetch(refreshUrl)); // request to fetch new info
+        steamData = await (await fetch(apiUrl)).json();
+    } catch (e) {
+        log.error(e.stack);
+        steamData = null;
+    } finally{
+        return steamData;
+    }
 }
 
 module.exports.getRank = async (steamId) => {
     const steamData = await fetchUserData(steamId);
+    if(steamData === null) return null;
     const dacProfile = steamData.dacProfile;
-    log.info(JSON.stringify(steamData));
-    log.info(JSON.stringify(dacProfile));
+    log.info(`Retrieved steamData for ${steamData.personaName}`);
+    log.info(`Retrieved DAC, rank: ${dacProfile.rank}`);
     if (!dacProfile)
         return "unknown";
     if (dacProfile.queenRank)
@@ -44,7 +54,9 @@ module.exports.getRank = async (steamId) => {
 }
 
 module.exports.getName = async (steamId) => {
-    let name = (await fetchUserData(steamId)).personaName;
-    log.info(name);
+    const steamData = await fetchUserData(steamId);
+    if(steamData === null) return null;
+    let name = steamData.personaName;
+    log.info('Get name returns ' + name);
     return name;
 }

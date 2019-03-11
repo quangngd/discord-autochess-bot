@@ -46,6 +46,20 @@ exports.run = async (client, message, args) => {
                 "description": `**${steamName}**'s rank is **${rank}**.`
             };
         }
+    } else if (args.length == 1 && /[0-9]+/.test(args[0])) {
+        // !rank steamId:
+        let steamId = args[0];
+        let steamName = await chess.getName(steamId);
+        let rank = await chess.getRank(steamId);
+        if(!rank || !steamName) embed = {
+            "color": 12729122,
+            "description": `Maybe you should recheck the Steam ID`
+        }; else {
+            embed = {
+                "color": 2278027,
+                "description": `**${steamName}**'s rank is **${rank}**.`
+            };
+        }
     }
 
     message.channel.send({
