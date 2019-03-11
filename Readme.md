@@ -12,6 +12,7 @@ An lightweight discord bot for autochess server
 3. !rank
     * !rank      : check your rank
     * !rank @user: check @user's rank
+    * !rank steamId
 
 ## Before installation
 
