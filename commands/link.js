@@ -5,10 +5,11 @@ const log = require('../utilities/logger');
 const LINK_URL = process.env.LINK_URL;
 
 exports.run = async (client, message, args) => {
-    let userId = message.author.id;
+    let user = message.author;
+    let userId = user.id;
     let embed = {
         "color": 12729122,
-        "description": "Unknow command."
+        "description": `${user}. Unknow command.`
     }
 
     if (args.length == 0) {
@@ -18,13 +19,13 @@ exports.run = async (client, message, args) => {
 
         if (!steamId) embed = {
             "color": 12729122,
-            "description": `No linked account found. Please use this [link](${LINK_URL}) to connect discord to your steam.`
+            "description": `${user}. No linked account found. Please use this [link](${LINK_URL}) to connect discord to your steam.`
         };
         else {
             let steamName = await chess.getName(steamId);
             embed = {
                 "color": 2278027,
-                "description": `You have been linked with **${steamName}**! You can do "!link relink" if you wish to update you info.`
+                "description": `${user}. You have been linked with **${steamName}**! You can do "!link relink" if you wish to update you info.`
             };
         }
     } else if (args.length == 1 && /<@!?([0-9]+)>/.test(args[0])) {
@@ -35,13 +36,13 @@ exports.run = async (client, message, args) => {
 
         if (!steamId) embed = {
             "color": 12729122,
-            "description": `No linked account found for <@${userId}>!`
+            "description": `${user}. No linked account found for <@${userId}>!`
         };
         else {
             let steamName = await chess.getName(steamId);
             embed = {
                 "color": 2278027,
-                "description": `<@${userId}> has been linked with **${steamName}**!`
+                "description": `${user}. <@${userId}> has been linked with **${steamName}**!`
             };
         }
     } else if (args.length == 1 && args[0] === 'relink')
@@ -49,7 +50,7 @@ exports.run = async (client, message, args) => {
         embed = {
 
             "color": 2278027,
-            "description": `Use this [link](${LINK_URL}) to update your info.`
+            "description": `${user}. Use this [link](${LINK_URL}) to update your info.`
         };
 
 
