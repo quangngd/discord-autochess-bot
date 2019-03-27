@@ -134,7 +134,7 @@ exports.run = async(client, message, args, lobby) => {
                         "description": `${user}. Oops! Something wrong happens, the user is in none or more than 1 room.`
                     }
                 } else {
-                    let room = room[0];
+                    let room = rooms[0];
                     if ((room.baseRank - room.rankRange) <= rankValue && rankValue <= (room.baseRank + room.rankRange)) {
                         if (room.addPlayer(member)) {
                             embed = {
